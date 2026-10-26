@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "niuniu513-ask/moon-sheet-formula/functions"
+
+import {
+  "niuniu513-ask/moon-sheet-formula/value",
+}
+
+// Values
+pub fn call(String, Array[@value.Value]) -> @value.Value?
+
+pub fn criteria_match(@value.Value, @value.Value) -> Bool
+
+pub fn is_lazy(String) -> Bool
+
+pub fn known(String) -> Bool
+
+pub fn names() -> Array[String]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
