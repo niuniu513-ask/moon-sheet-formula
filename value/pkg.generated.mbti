@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "niuniu513-ask/moon-sheet-formula/value"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn compare_value(Value, Value) -> Int?
+
+pub fn format_number(Double) -> String
+
+pub fn number_value(Double) -> Value
+
+pub fn parse_number(String) -> Double?
+
+pub fn trim_ascii(String) -> String
+
+pub fn upper_ascii(String) -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum ErrorCode {
+  Null
+  DivZero
+  ValueError
+  Ref
+  Name
+  BadNum
+  NA
+  Circular
+} derive(Eq, @debug.Debug)
+pub fn ErrorCode::equal(Self, Self) -> Bool
+pub fn ErrorCode::not_equal(Self, Self) -> Bool
+pub fn ErrorCode::text(Self) -> String
+pub fn ErrorCode::to_repr(Self) -> @debug.Repr
+
+pub(all) enum Value {
+  Num(Double)
+  Text(String)
+  Bool(Bool)
+  Blank
+  Err(ErrorCode)
+  Grid(Array[Array[Value]])
+} derive(Eq, @debug.Debug)
+pub fn Value::boolean(Self) -> Bool?
+pub fn Value::equal(Self, Self) -> Bool
+pub fn Value::error(Self) -> ErrorCode?
+pub fn Value::flatten(Self) -> Array[Self]
+pub fn Value::is_error(Self) -> Bool
+pub fn Value::not_equal(Self, Self) -> Bool
+pub fn Value::number(Self) -> Double?
+pub fn Value::rows(Self) -> Array[Array[Self]]?
+pub fn Value::same(Self, Self) -> Bool
+pub fn Value::text(Self) -> String
+pub fn Value::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
