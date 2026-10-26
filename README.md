@@ -1,5 +1,7 @@
 # moon-sheet-formula
 
+[![CI](https://github.com/niuniu513-ask/moon-sheet-formula/actions/workflows/ci.yml/badge.svg)](https://github.com/niuniu513-ask/moon-sheet-formula/actions/workflows/ci.yml)
+
 纯 MoonBit 实现的电子表格公式引擎：把 `=SUM(A1:A3)*Tax` 这样的公式字符串，变成可计算、可增量重算、可定位错误的结果。
 
 ## 项目目标
@@ -130,7 +132,7 @@ for d in report.diagnostics {
 
 项目对两类失败给了不同形状，调用方不需要额外适配：
 
-- **解析失败用错误效应**：`@syntax.parse(text) -> Expr raise ParseError`，`@syntax.lex`、`@syntax.parse_a1`、`@syntax.parse_area` 同理。写解析器时错误直接向上传播，测试里用 `try?` 或 `catch` 转成数据，不需要层层拆 `Result`。
+- **解析失败用错误效应**：`@syntax.parse(text) -> Expr raise ParseError`，`@syntax.lex`、`@syntax.parse_a1`、`@syntax.parse_area` 同理。错误沿调用链直接向上传播，调用方不必层层拆 `Result`；需要在测试里断言具体错误变体与偏移量时，用 `try expr catch { 变体 => ... } noraise { _ => abort(...) }`（`try?` 已在新版编译器弃用）。
 - **写入被拒用 `Result`**：`wb.set_number(...) -> Result[Unit, CalcError]`，因为"这格写不进去"是调用方要判断的普通数据，不是异常；`CalcError` 因此是普通枚举而不是 `suberror`。重算内部只在 `calc/syntax_bridge.mbt` 一处把错误效应转回数据，其余代码看到的都是值。
 
 ## 支持的函数（94 个）

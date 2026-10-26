@@ -6,6 +6,8 @@ readme = "README.md"
 
 license = "MIT"
 
+repository = "https://github.com/niuniu513-ask/moon-sheet-formula"
+
 keywords = [ "excel", "formula", "spreadsheet", "evaluator", "recalculation" ]
 
 description = "Spreadsheet formula engine in pure MoonBit: lexer, parser, Excel-compatible value semantics, function library, dependency graph and deterministic recalculation"
