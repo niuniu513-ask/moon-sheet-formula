@@ -1,0 +1,2 @@
+# MoonBit 源码统一使用 LF，避免跨平台换行漂移
+* text=auto eol=lf
