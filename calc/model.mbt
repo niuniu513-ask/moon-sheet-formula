@@ -18,7 +18,10 @@ pub extend CellInput with @debug.Debug::{to_repr}
 /// Workbook-level errors: invalid references, unknown sheets or names, and
 /// duplicate named ranges. Cell-level problems are reported as diagnostics in
 /// `CalcReport` instead, because one broken cell must not stop a recalculation.
-pub(all) suberror CalcError {
+///
+/// Plain `enum`, not `suberror`, for the same reason: a rejected write is
+/// ordinary data the caller inspects, and nothing here is thrown.
+pub(all) enum CalcError {
   InvalidReference(String)
   UnknownSheet(String)
   UnknownName(String)
@@ -113,9 +116,9 @@ pub fn Workbook::set_cell(
   if sheet == "" {
     return Err(InvalidReference(a1))
   }
-  match @syntax.parse_a1(a1) {
-    Err(_) => Err(InvalidReference(a1))
-    Ok(rc) => {
+  match parse_a1_opt(a1) {
+    None => Err(InvalidReference(a1))
+    Some(rc) => {
       let canonical = @syntax.cell_a1(rc.0, rc.1)
       let cells = self.sheet_mut(sheet)
       if input is Empty {
@@ -192,13 +195,13 @@ pub fn Workbook::input_at(
 ) -> CellInput? {
   match self.sheets.get(sheet) {
     Some(cells) =>
-      match @syntax.parse_a1(a1) {
-        Ok(rc) =>
+      match parse_a1_opt(a1) {
+        Some(rc) =>
           match cells.get(@syntax.cell_a1(rc.0, rc.1)) {
             Some(i) => Some(i)
             None => Some(Empty)
           }
-        Err(_) => None
+        None => None
       }
     None => None
   }
@@ -211,9 +214,9 @@ pub fn Workbook::value_at(
   sheet : String,
   a1 : String,
 ) -> @value.Value {
-  match @syntax.parse_a1(a1) {
-    Err(_) => @value.Err(@value.Ref)
-    Ok(rc) => {
+  match parse_a1_opt(a1) {
+    None => @value.Err(@value.Ref)
+    Some(rc) => {
       let key = cell_key(sheet, rc.0, rc.1)
       match self.last.get(key) {
         Some(v) => v
@@ -246,9 +249,9 @@ pub fn Workbook::define_name(
   if upper == "" {
     return Err(UnknownName(name))
   }
-  match @syntax.parse_area(area_text) {
-    Err(_) => Err(BadArea(area_text))
-    Ok(area) => {
+  match parse_area_opt(area_text) {
+    None => Err(BadArea(area_text))
+    Some(area) => {
       if self.names.contains(upper) {
         return Err(DuplicateName(upper))
       }

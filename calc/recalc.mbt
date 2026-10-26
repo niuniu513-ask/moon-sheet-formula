@@ -97,19 +97,17 @@ fn Workbook::build_nodes(self : Workbook) -> Array[FormulaNode] {
     for a1, input in cells {
       match input {
         Formula(text) =>
-          match @syntax.parse_a1(a1) {
-            Err(_) => ()
-            Ok(rc) => {
+          match parse_a1_opt(a1) {
+            None => ()
+            Some(rc) => {
               let key = cell_key(sheet_name, rc.0, rc.1)
-              match @syntax.parse(text) {
-                Err(e) =>
+              match parse_expr_result(text) {
+                Err(msg) =>
                   nodes.push({
                     key,
                     sheet: sheet_name,
                     ast: None,
-                    parse_error: Some(
-                      "formula failed to parse: " + parse_error_text(e),
-                    ),
+                    parse_error: Some("formula failed to parse: " + msg),
                     deps: [],
                     name_error: None,
                   })
@@ -413,9 +411,9 @@ pub fn Workbook::dependencies(
   a1 : String,
 ) -> Array[String] {
   let out : Array[String] = []
-  match @syntax.parse_a1(a1) {
-    Err(_) => out
-    Ok(rc) => {
+  match parse_a1_opt(a1) {
+    None => out
+    Some(rc) => {
       let key = cell_key(sheet, rc.0, rc.1)
       for node in self.build_nodes() {
         if node.key == key {
@@ -437,7 +435,7 @@ pub fn Workbook::evaluate_formula(
   sheet : String,
   formula : String,
 ) -> @value.Value {
-  match @syntax.parse(formula) {
+  match parse_expr_result(formula) {
     Err(_) => @value.Err(@value.ValueError)
     Ok(ast) => {
       let env = make_env(

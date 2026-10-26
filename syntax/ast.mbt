@@ -1,5 +1,10 @@
 ///|
 /// A syntax error with the character offset where it was detected.
+///
+/// This is a `suberror`, so the public API reports failures with MoonBit's
+/// error effect (`Array[Token] raise ParseError`). The recalculation layer
+/// catches it immediately and turns it into a cell-level diagnostic, so a bad
+/// formula never aborts the whole pass.
 pub(all) suberror ParseError {
   Unexpected(String, Int)
   UnexpectedEnd(Int)

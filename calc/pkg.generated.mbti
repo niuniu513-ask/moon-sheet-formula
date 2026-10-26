@@ -17,7 +17,9 @@ pub fn make_env((String, Int, Int) -> @value.Value, (String) -> @value.Value) ->
 pub fn split_key(String) -> (String, String)
 
 // Errors
-pub(all) suberror CalcError {
+
+// Types and methods
+pub(all) enum CalcError {
   InvalidReference(String)
   UnknownSheet(String)
   UnknownName(String)
@@ -28,7 +30,6 @@ pub fn CalcError::equal(Self, Self) -> Bool
 pub fn CalcError::not_equal(Self, Self) -> Bool
 pub fn CalcError::to_repr(Self) -> @debug.Repr
 
-// Types and methods
 pub(all) struct CalcReport {
   values : Map[String, @value.Value]
   diagnostics : Array[Diagnostic]

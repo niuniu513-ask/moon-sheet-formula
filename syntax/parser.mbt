@@ -316,7 +316,9 @@ fn Parser::parse_expr(self : Parser) -> Expr raise ParseError {
 }
 
 ///|
-fn parse_impl(text : String) -> Expr raise ParseError {
+/// Parse a formula, optionally prefixed with `=`. Returns the expression tree
+/// or raises `ParseError` with the offset of the first problem.
+pub fn parse(text : String) -> Expr raise ParseError {
   let chars = text.code_units()
   let body = if chars.length() > 0 && chars[0].to_int() == 61 {
     text[1:].to_owned()
@@ -326,10 +328,7 @@ fn parse_impl(text : String) -> Expr raise ParseError {
   if @value.trim_ascii(body) == "" {
     raise EmptyFormula
   }
-  let toks = match lex(body) {
-    Ok(t) => t
-    Err(e) => raise e
-  }
+  let toks = lex(body)
   let parser : Parser = { toks, pos: 0, depth: 0, }
   let expr = parser.parse_expr()
   if !parser.at_end() {
@@ -339,31 +338,22 @@ fn parse_impl(text : String) -> Expr raise ParseError {
 }
 
 ///|
-/// Parse a formula, optionally prefixed with `=`. Returns the expression tree.
-pub fn parse(text : String) -> Result[Expr, ParseError] {
-  Ok(parse_impl(text)) catch {
-    e => Err(e)
-  }
-}
-
-///|
 /// Parse a single cell reference such as `B7` or `$B$7`.
-pub fn parse_a1(a1 : String) -> Result[(Int, Int), ParseError] {
+pub fn parse_a1(a1 : String) -> (Int, Int) raise ParseError {
   match cell_ref_of(@value.trim_ascii(a1)) {
-    Some(rc) => Ok(rc)
-    None => Err(Unexpected("invalid cell reference `" + a1 + "`", 0))
+    Some(rc) => rc
+    None => raise Unexpected("invalid cell reference `" + a1 + "`", 0)
   }
 }
 
 ///|
 /// Parse a rectangular area such as `A1:B4` or `Sheet2!A1:B4`. A single cell
 /// reference yields a 1x1 area.
-pub fn parse_area(text : String) -> Result[Area, ParseError] {
+pub fn parse_area(text : String) -> Area raise ParseError {
   match parse(text) {
-    Ok(Range(sheet, r1, c1, r2, c2)) => Ok({ sheet, r1, c1, r2, c2, })
-    Ok(Ref(sheet, r, c)) => Ok({ sheet, r1: r, c1: c, r2: r, c2: c, })
-    Ok(_) => Err(Unexpected("not an area reference", 0))
-    Err(e) => Err(e)
+    Range(sheet, r1, c1, r2, c2) => { sheet, r1, c1, r2, c2, }
+    Ref(sheet, r, c) => { sheet, r1: r, c1: c, r2: r, c2: c, }
+    _ => raise Unexpected("not an area reference", 0)
   }
 }
 

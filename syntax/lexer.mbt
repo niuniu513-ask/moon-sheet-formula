@@ -113,14 +113,7 @@ pub fn cell_ref_of(word : String) -> (Int, Int)? {
 ///|
 /// Tokenize formula text. Raises `ParseError` for unterminated strings,
 /// malformed numbers and characters outside the supported grammar.
-pub fn lex(input : String) -> Result[Array[Token], ParseError] {
-  Ok(lex_impl(input)) catch {
-    e => Err(e)
-  }
-}
-
-///|
-fn lex_impl(input : String) -> Array[Token] raise ParseError {
+pub fn lex(input : String) -> Array[Token] raise ParseError {
   let cs = chars_of(input)
   let n = cs.length()
   let out : Array[Token] = []
