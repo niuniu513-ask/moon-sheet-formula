@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "niuniu513-ask/moon-sheet-formula/syntax"
+
+import {
+  "moonbitlang/core/debug",
+  "niuniu513-ask/moon-sheet-formula/value",
+}
+
+// Values
+pub fn cell_a1(Int, Int) -> String
+
+pub fn cell_ref_of(String) -> (Int, Int)?
+
+pub fn column_letters(Int) -> String
+
+pub fn lex(String) -> Result[Array[Token], ParseError]
+
+pub fn parse(String) -> Result[Expr, ParseError]
+
+pub fn parse_a1(String) -> Result[(Int, Int), ParseError]
+
+pub fn parse_area(String) -> Result[Area, ParseError]
+
+// Errors
+pub(all) suberror ParseError {
+  Unexpected(String, Int)
+  UnexpectedEnd(Int)
+  BadNumber(String, Int)
+  EmptyFormula
+} derive(Eq, @debug.Debug)
+pub fn ParseError::equal(Self, Self) -> Bool
+pub fn ParseError::not_equal(Self, Self) -> Bool
+pub fn ParseError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) struct Area {
+  sheet : String
+  r1 : Int
+  c1 : Int
+  r2 : Int
+  c2 : Int
+} derive(Eq, @debug.Debug)
+pub fn Area::equal(Self, Self) -> Bool
+pub fn Area::not_equal(Self, Self) -> Bool
+pub fn Area::size(Self) -> Int
+pub fn Area::to_repr(Self) -> @debug.Repr
+
+pub enum Expr {
+  Lit(@value.Value)
+  Ref(String, Int, Int)
+  Range(String, Int, Int, Int, Int)
+  NameLit(String)
+  Call(String, Array[Expr])
+  Unary(String, Expr)
+  Binary(String, Expr, Expr)
+} derive(@debug.Debug)
+pub fn Expr::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Token {
+  kind : TokenKind
+  pos : Int
+} derive(Eq, @debug.Debug)
+pub fn Token::equal(Self, Self) -> Bool
+pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::to_repr(Self) -> @debug.Repr
+
+pub(all) enum TokenKind {
+  Number(Double)
+  StringLit(String)
+  Name(String)
+  Ref(Int, Int)
+  Sheet(String)
+  Op(String)
+  LParen
+  RParen
+  Comma
+  Colon
+  Bang
+  End
+} derive(Eq, @debug.Debug)
+pub fn TokenKind::equal(Self, Self) -> Bool
+pub fn TokenKind::not_equal(Self, Self) -> Bool
+pub fn TokenKind::to_repr(Self) -> @debug.Repr
+
+// Type aliases
+
+// Traits
