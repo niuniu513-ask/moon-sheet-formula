@@ -6,7 +6,7 @@ import {
 }
 
 // Values
-pub fn compare_value(Value, Value) -> Int?
+pub fn compare_value(Value, Value) -> Int32?
 
 pub fn format_number(Double) -> String
 

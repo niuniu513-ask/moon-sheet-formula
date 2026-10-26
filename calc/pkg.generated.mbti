@@ -8,11 +8,11 @@ import {
 }
 
 // Values
-pub fn cell_key(String, Int, Int) -> String
+pub fn cell_key(String, Int32, Int32) -> String
 
 pub fn eval_expr(@syntax.Expr, EvalEnv) -> @value.Value
 
-pub fn make_env((String, Int, Int) -> @value.Value, (String) -> @value.Value) -> EvalEnv
+pub fn make_env((String, Int32, Int32) -> @value.Value, (String) -> @value.Value) -> EvalEnv
 
 pub fn split_key(String) -> (String, String)
 
@@ -57,7 +57,7 @@ pub fn Diagnostic::not_equal(Self, Self) -> Bool
 pub fn Diagnostic::to_repr(Self) -> @debug.Repr
 
 pub struct EvalEnv {
-  cell : (String, Int, Int) -> @value.Value
+  cell : (String, Int32, Int32) -> @value.Value
   name : (String) -> @value.Value
 }
 
