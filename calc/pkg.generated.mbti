@@ -1,0 +1,87 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "niuniu513-ask/moon-sheet-formula/calc"
+
+import {
+  "moonbitlang/core/debug",
+  "niuniu513-ask/moon-sheet-formula/syntax",
+  "niuniu513-ask/moon-sheet-formula/value",
+}
+
+// Values
+pub fn cell_key(String, Int, Int) -> String
+
+pub fn eval_expr(@syntax.Expr, EvalEnv) -> @value.Value
+
+pub fn make_env((String, Int, Int) -> @value.Value, (String) -> @value.Value) -> EvalEnv
+
+pub fn split_key(String) -> (String, String)
+
+// Errors
+pub(all) suberror CalcError {
+  InvalidReference(String)
+  UnknownSheet(String)
+  UnknownName(String)
+  DuplicateName(String)
+  BadArea(String)
+} derive(Eq, @debug.Debug)
+pub fn CalcError::equal(Self, Self) -> Bool
+pub fn CalcError::not_equal(Self, Self) -> Bool
+pub fn CalcError::to_repr(Self) -> @debug.Repr
+
+// Types and methods
+pub(all) struct CalcReport {
+  values : Map[String, @value.Value]
+  diagnostics : Array[Diagnostic]
+  order : Array[String]
+} derive(@debug.Debug)
+pub fn CalcReport::to_repr(Self) -> @debug.Repr
+
+pub(all) enum CellInput {
+  Empty
+  Number(Double)
+  CellText(String)
+  Boolean(Bool)
+  Formula(String)
+} derive(Eq, @debug.Debug)
+pub fn CellInput::equal(Self, Self) -> Bool
+pub fn CellInput::not_equal(Self, Self) -> Bool
+pub fn CellInput::to_repr(Self) -> @debug.Repr
+
+pub(all) struct Diagnostic {
+  cell : String
+  message : String
+} derive(Eq, @debug.Debug)
+pub fn Diagnostic::equal(Self, Self) -> Bool
+pub fn Diagnostic::not_equal(Self, Self) -> Bool
+pub fn Diagnostic::to_repr(Self) -> @debug.Repr
+
+pub struct EvalEnv {
+  cell : (String, Int, Int) -> @value.Value
+  name : (String) -> @value.Value
+}
+
+pub struct Workbook {
+  sheets : Map[String, Map[String, CellInput]]
+  names : Map[String, @syntax.Area]
+  mut last : Map[String, @value.Value]
+}
+pub fn Workbook::clear_cell(Self, String, String) -> Result[Unit, CalcError]
+pub fn Workbook::define_name(Self, String, String) -> Result[Unit, CalcError]
+pub fn Workbook::dependencies(Self, String, String) -> Array[String]
+pub fn Workbook::evaluate_formula(Self, String, String) -> @value.Value
+pub fn Workbook::input_at(Self, String, String) -> CellInput?
+pub fn Workbook::named_ranges(Self) -> Map[String, @syntax.Area]
+pub fn Workbook::new() -> Self
+pub fn Workbook::recalculate(Self) -> CalcReport
+pub fn Workbook::recalculate_from(Self, Array[String]) -> CalcReport
+pub fn Workbook::set_bool(Self, String, String, Bool) -> Result[Unit, CalcError]
+pub fn Workbook::set_cell(Self, String, String, CellInput) -> Result[Unit, CalcError]
+pub fn Workbook::set_formula(Self, String, String, String) -> Result[Unit, CalcError]
+pub fn Workbook::set_number(Self, String, String, Double) -> Result[Unit, CalcError]
+pub fn Workbook::set_text(Self, String, String, String) -> Result[Unit, CalcError]
+pub fn Workbook::sheet_names(Self) -> Array[String]
+pub fn Workbook::value_at(Self, String, String) -> @value.Value
+
+// Type aliases
+
+// Traits
