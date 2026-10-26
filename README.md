@@ -126,6 +126,13 @@ for d in report.diagnostics {
 }
 ```
 
+### 两种失败风格
+
+项目对两类失败给了不同形状，调用方不需要额外适配：
+
+- **解析失败用错误效应**：`@syntax.parse(text) -> Expr raise ParseError`，`@syntax.lex`、`@syntax.parse_a1`、`@syntax.parse_area` 同理。写解析器时错误直接向上传播，测试里用 `try?` 或 `catch` 转成数据，不需要层层拆 `Result`。
+- **写入被拒用 `Result`**：`wb.set_number(...) -> Result[Unit, CalcError]`，因为"这格写不进去"是调用方要判断的普通数据，不是异常；`CalcError` 因此是普通枚举而不是 `suberror`。重算内部只在 `calc/syntax_bridge.mbt` 一处把错误效应转回数据，其余代码看到的都是值。
+
 ## 支持的函数（94 个）
 
 | 分类 | 数量 | 函数 |
@@ -176,7 +183,7 @@ for d in report.diagnostics {
 | 包 | 职责 | 对外 API |
 | --- | --- | --- |
 | `value` | 值类型、错误码、显示、比较、文本与数字解析 | `Value`、`ErrorCode`、`compare_value`、`parse_number` |
-| `syntax` | 词法、语法、AST、A1 记号工具 | `lex`、`parse`、`parse_a1`、`parse_area`、`cell_a1`、`column_letters` |
+| `syntax` | 词法、语法、AST、A1 记号工具 | `lex`、`parse`、`parse_a1`、`parse_area`（均 `raise ParseError`）、`cell_a1`、`column_letters` |
 | `functions` | 94 个函数与分发表 | `call`、`names`、`known`、`is_lazy`、`criteria_match` |
 | `calc` | 工作簿模型、求值环境、依赖图与重算 | `Workbook`、`CellInput`、`CalcReport`、`Diagnostic`、`recalculate`、`recalculate_from` |
 | `examples/demo` | 端到端示例（预算表 + 破坏性单元格） | `moon run` |
