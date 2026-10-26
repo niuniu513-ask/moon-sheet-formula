@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Toolchain versions
+        run: moon version --all
+
+      - name: Check, build and test every target
+        run: |
+          moon check --deny-warn --target all
+          moon build --target all
+          moon test --deny-warn --target all
+
+      - name: Formatting and interface files are up to date
+        run: |
+          moon fmt --check
+          moon info
+          git diff --exit-code
+
+      - name: Run the example on every backend
+        run: |
+          for target in wasm wasm-gc js native; do
+            echo "== $target =="
+            moon run examples/demo --target "$target" | head -n 20
+          done
