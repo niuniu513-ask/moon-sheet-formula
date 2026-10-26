@@ -59,6 +59,8 @@
 | 全目标测试 | `moon test --deny-warn --target all` | 四个目标各 41/41 通过 |
 | 格式 | `moon fmt --check` | 通过 |
 | 示例 | `moon run examples/demo --target wasm-gc` | 正常输出预算表与诊断 |
+| 线上 CI | GitHub Actions 运行 40326485260 | 通过：check/build/test 四目标、接口一致性、四个后端运行示例 |
+| 仓库状态 | 24 个提交，公开仓库 `niuniu513-ask/moon-sheet-formula` | 默认分支 main，工作树干净 |
 
 ## 7. 未核实项
 
