@@ -1,0 +1,6 @@
+import {
+  "niuniu513-ask/moon-sheet-formula/calc",
+  "niuniu513-ask/moon-sheet-formula/value",
+}
+
+pkgtype(kind: "executable")
