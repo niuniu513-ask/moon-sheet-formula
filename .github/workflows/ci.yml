@@ -36,11 +36,13 @@ jobs:
           git diff --exit-code
 
       # The formatter's exact output changes between toolchain releases, so a
-      # formatting diff must not turn a green build red. It is reported for
-      # information; contributors run `moon fmt` before committing.
+      # formatting diff must not turn a green build red. It is reported as a
+      # warning; contributors run `moon fmt` before committing.
       - name: Formatting report (non-blocking)
-        continue-on-error: true
-        run: moon fmt --check
+        run: |
+          if ! moon fmt --check; then
+            echo "::warning::moon fmt --check reports a diff; this is usually toolchain drift, not a code problem"
+          fi
 
       - name: Run the example on every backend
         run: |

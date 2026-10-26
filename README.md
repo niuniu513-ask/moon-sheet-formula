@@ -198,7 +198,14 @@ calc     14 个：拓扑顺序、循环、增量、命名范围、跨表、错�
 合计     41 个
 ```
 
-CI 配置见 `.github/workflows/ci.yml`：在 `ubuntu-latest` 上安装 MoonBit，然后 `moon check --deny-warn --target all`、`moon build --target all`、`moon test --deny-warn --target all`（`wasm`、`wasm-gc`、`js`、`native` 四个目标各 41 个测试），再校验 `moon fmt --check` 与 `moon info` 后工作树是否干净，最后在四个后端上各跑一遍示例程序。CI 配置存在不等于线上已经跑通，此处只说明流程内容。
+CI 配置见 `.github/workflows/ci.yml`：在 `ubuntu-latest` 上安装 MoonBit（当前实测 `moonc v0.10.17`），依次执行
+
+1. `moon check --deny-warn --target all`、`moon build --target all`、`moon test --deny-warn --target all`——四个目标各 41 个测试；
+2. `moon info` 后 `git diff --exit-code`，拦截生成接口漂移；
+3. `moon fmt --check` 作为**非阻断**报告：格式化器的输出会随工具链版本变化，把它做成阻断项会让版本差异伪装成代码问题；
+4. 在 `wasm`、`wasm-gc`、`js`、`native` 上各跑一遍 `examples/demo`。
+
+提交的 `pkg.generated.mbti` 以 CI 使用的工具链为准（该版本把 `Int` 渲染为 `Int32`），本地更旧的工具链重新运行 `moon info` 会显示同样的差异。
 
 ## 限制与不做的部分
 
